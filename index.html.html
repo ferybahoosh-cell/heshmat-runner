@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>حشمت ران — انتخاب مراحل</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f7f7f7;color:#222;font-family:Tahoma,"Segoe UI",sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center}
+.wrap{width:min(960px,96vw);text-align:center}.panel{background:#fff;border:2px solid #333;border-radius:14px;padding:14px;box-shadow:0 5px 0 #ccc}
+h1{margin:4px 0 8px;font-size:clamp(22px,4vw,34px)}p{margin:5px 0 12px;color:#444}
+canvas{display:block;width:100%;height:auto;border:2px solid #333;border-radius:8px;background:#f7f7f7;image-rendering:pixelated;touch-action:manipulation}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;font-weight:bold;border:2px solid #222;border-radius:10px;padding:10px 18px;background:#f4d35e;cursor:pointer;box-shadow:0 3px 0 #222}button:active{transform:translateY(2px);box-shadow:0 1px 0 #222}
+button.secondary{background:#e8e8e8}button.restart{background:#f4d35e}.small{font-size:13px;color:#666;margin-top:10px}
+#lobby{padding:14px 4px 8px} .stages{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:18px 0}
+.stage{width:min(310px,100%);border:2px solid #333;border-radius:12px;padding:16px;background:#fff;box-shadow:0 4px 0 #ddd}
+.stage:nth-child(-n+5){background:#c9efc5}
+.stage:nth-child(n+6):nth-child(-n+10){background:#fff0a6}
+.stage:nth-child(n+11){background:#f3b0b0}
+.stage:nth-child(-n+5) button{background:#63c76a}
+.stage:nth-child(n+6):nth-child(-n+10) button{background:#f4d35e}
+.stage:nth-child(n+11) button{background:#df4545;color:#fff}
+#gameview.red-stage .controls button{background:#df4545;color:#fff}
+#gameview .controls button{background:#63c76a}
+#gameview.yellow-stage .controls button{background:#f4d35e}
+.stage h2{margin:0 0 8px;font-size:22px}.stage p{min-height:42px;line-height:1.8}
+.stage button{width:100%}.tag{display:inline-block;background:#eee;border-radius:20px;padding:4px 10px;font-size:13px}
+#gameview{display:none}
+.stage:nth-child(16){background:#111;color:#fff;border-color:#000;box-shadow:0 4px 0 #555}.stage:nth-child(16) p{color:#ddd}.stage:nth-child(16) .tag{background:#444;color:#fff}.stage:nth-child(16) button{background:#000;color:#fff;border-color:#fff;box-shadow:0 3px 0 #777}
+#gameview.black-stage .controls button{background:#000;color:#fff}
+.panel{position:relative}#cheatBtn{position:absolute;top:10px;left:10px;z-index:6;padding:6px 12px;font-size:13px;background:#e8e8e8}#cheatBox{display:none;position:absolute;top:52px;left:10px;z-index:6;background:#fff;border:2px solid #333;border-radius:10px;padding:10px 14px;text-align:right;box-shadow:0 3px 0 #ccc}#cheatBox label{display:block;margin:6px 0;cursor:pointer;font-size:14px}#cheatBox h3{margin:0 0 6px;font-size:15px}
+#guideBtn{position:absolute;top:10px;right:10px;z-index:6;padding:6px 12px;font-size:13px;background:#e8e8e8}#guideBox{display:none;position:absolute;top:52px;right:10px;z-index:6;background:#fff;border:2px solid #333;border-radius:10px;padding:10px 14px;text-align:right;box-shadow:0 3px 0 #ccc}#guideBox h3{margin:0 0 6px;font-size:15px}#guideBox div{margin:6px 0;font-size:14px}
+</style></head>
+<body><div class="wrap"><div class="panel">
+<div id="lobby">
+<button id="cheatBtn" onclick="var b=document.getElementById('cheatBox');b.style.display=b.style.display==='block'?'none':'block'">🎭 تقلب‌های درون بازی</button>
+<button id="guideBtn" onclick="var b=document.getElementById('guideBox');b.style.display=b.style.display==='block'?'none':'block'">📖 راهنما</button>
+<div id="guideBox"><h3>راهنمای مراحل</h3><div>🟢 مراحل ۱ تا ۵: فقط سیگار</div><div>🟡 مراحل ۶ تا ۱۰: سیگار و تریاک</div><div>🔴 مراحل ۱۱ تا ۱۵: سیگار، تریاک و قلیون</div><div>⚫ مرحله ۱۶: باس فایت</div></div>
+<div id="cheatBox"><h3>تقلب‌های درون بازی</h3><label><input type="checkbox" onchange="setCheat('god',this.checked)"> نباختن با سیگار، تریاک و قلیون</label><label><input type="checkbox" onchange="setCheat('fly',this.checked)"> پرواز حشمت (توی هوا هم پرش بزن)</label></div>
+<h1>🎮 حشمت ران</h1><p>به دنیای حشمت‌خان خوش اومدی! مرحله‌ات رو انتخاب کن.</p>
+<div class="stages">
+<div class="stage"><div class="tag">مرحله ۱</div><h2>راه ترک سیگار</h2><p>به امتیاز ۵۰۰ برس و حشمت رو به کمپ برسون.</p><button onclick="startStage(1)">شروع مرحله ۱</button></div>
+<div class="stage"><div class="tag">مرحله ۲</div><h2>راه طولانی‌تر</h2><p>همون گیم‌پلی؛ این بار امتیاز ۱۰۰۰.</p><button onclick="startStage(2)">شروع مرحله ۲</button></div>
+<div class="stage"><div class="tag">مرحله ۳</div><h2>یک قدم دیگه</h2><p>برای برد باید به امتیاز ۱۵۰۰ برسی.</p><button onclick="startStage(3)">شروع مرحله ۳</button></div>
+<div class="stage"><div class="tag">مرحله ۴</div><h2>راه سخت‌تر</h2><p>برای برد باید به امتیاز ۲۰۰۰ برسی.</p><button onclick="startStage(4)">شروع مرحله ۴</button></div>
+<div class="stage"><div class="tag">مرحله ۵</div><h2>مأموریت پنجم</h2><p>برای برد باید به امتیاز ۲۵۰۰ برسی.</p><button onclick="startStage(5)">شروع مرحله ۵</button></div>
+<div class="stage"><div class="tag">مرحله ۶</div><h2>راه وسوسه</h2><p>تریاک‌های معلق اضافه شده‌اند؛ هدف ۵۰۰ امتیاز.</p><button onclick="startStage(6)">شروع مرحله ۶</button></div>
+<div class="stage"><div class="tag">مرحله ۷</div><h2>راه وسوسه</h2><p>از تریاک‌های معلق دوری کن؛ هدف ۱۰۰۰ امتیاز.</p><button onclick="startStage(7)">شروع مرحله ۷</button></div>
+<div class="stage"><div class="tag">مرحله ۸</div><h2>راه وسوسه</h2><p>از تریاک‌های معلق دوری کن؛ هدف ۱۵۰۰ امتیاز.</p><button onclick="startStage(8)">شروع مرحله ۸</button></div>
+<div class="stage"><div class="tag">مرحله ۹</div><h2>راه وسوسه</h2><p>از تریاک‌های معلق دوری کن؛ هدف ۲۰۰۰ امتیاز.</p><button onclick="startStage(9)">شروع مرحله ۹</button></div>
+<div class="stage"><div class="tag">مرحله ۱۰</div><h2>مأموریت دهم</h2><p>مرحله‌ی دهم؛ هدف ۲۵۰۰ امتیاز.</p><button onclick="startStage(10)">شروع مرحله ۱۰</button></div>
+<div class="stage"><div class="tag">مرحله ۱۱</div><h2>شکستن قلیون</h2><p>سیگار، تریاک و قلیون؛ قلیون رو با دستمال یزدی بشکن!</p><button onclick="startStage(11)">شروع مرحله ۱۱</button></div>
+<div class="stage"><div class="tag">مرحله ۱۲</div><h2>مسیر قرمز</h2><p>موانع بیشتر و قلیون‌های سرسخت‌تر؛ هدف ۱۰۰۰ امتیاز.</p><button onclick="startStage(12)">شروع مرحله ۱۲</button></div>
+<div class="stage"><div class="tag">مرحله ۱۳</div><h2>وسوسه‌ی سخت</h2><p>از سیگار و تریاک دوری کن و قلیون‌ها رو بشکن؛ هدف ۱۵۰۰.</p><button onclick="startStage(13)">شروع مرحله ۱۳</button></div>
+<div class="stage"><div class="tag">مرحله ۱۴</div><h2>نبرد دستمال یزدی</h2><p>واکنش سریع لازم داری؛ هدف ۲۰۰۰ امتیاز.</p><button onclick="startStage(14)">شروع مرحله ۱۴</button></div>
+<div class="stage"><div class="tag">مرحله ۱۵</div><h2>مسیر نجات</h2><p>چالش نهایی فصل اول؛ هدف ۳۰۰۰ امتیاز.</p><button onclick="startStage(15)">شروع مرحله ۱۵</button></div>
+<div class="stage"><div class="tag">مرحله ۱۶</div><h2>نبرد نهایی</h2><p>رودررو با غریبه‌ی سیگاری؛ ۳ ضربه‌ی دستمال یزدی کارشو تمومه.</p><button onclick="startStage(16)">شروع مرحله ۱۶</button></div>
+</div><p class="small">کنترل: Space یا ↑ برای پرش — روی خود بازی هم می‌تونی بزنی.</p>
+<div style="position:relative;min-height:22px;margin-top:12px"><span style="position:absolute;left:4px;bottom:0;font-size:12px;color:#777">ساخته شده توسط فری</span></div><p class="small">کنترل: Space یا ↑ برای پرش — روی خود بازی هم می‌تونی بزنی.</p>
+</div>
+<div id="gameview">
+<h1 id="gameTitle">🏃‍♂️ حشمت ران</h1>
+<p id="stageGoal">به امتیاز ۵۰۰ برس تا حشمت بره کمپ!</p>
+<canvas id="game" width="900" height="300" aria-label="بازی حشمت ران"></canvas>
+<div class="controls"><button id="jump">پرش! ⬆</button><button id="smash" style="display:none">ضربه با دستمال یزدی 🧣</button><button class="secondary" onclick="showLobby()">بازگشت به لابی</button><button class="restart" id="restart">شروع دوباره</button><button id="nextStage" style="display:none">رفتن به مرحله بعد ⟵</button></div>
+<div class="small">Space / ↑ برای پرش — در مراحل ۱۱ تا ۱۵، وقتی به قلیون نزدیک شدی «ضربه با دستمال یزدی» یا کلید E رو بزن.</div>
+</div>
+</div></div>
+<script>
+(() => {
+const c=document.getElementById('game'),ctx=c.getContext('2d'),W=c.width,H=c.height,ground=246;
+let state='ready',stage=1,target=500,score=0,frame=0,speed=3.8,obstacles=[],opiums=[],message='',cigCount=0,cigsSinceOpium=0,nextOpiumAfter=2,opiumSpawnAt=-1,hookahs=[],smashAnim=0,clouds=[{x:120,y:48},{x:450,y:70},{x:740,y:40}];
+let boss={x:740,hp:3,phase:'throw',t:0,hurt:0,arm:0},scarfs=[],si=0,ei=0,introDone=false;
+const S=[['غریبه',['حشمت! سیگار نمی‌خوای؟']],['حشمت',['نه، من دارم ترک می‌کنم.']],['غریبه',['باشه… اگه من بذارم تو ترک کنی!']]];
+const E=[['راوی',['حشمت با آخرین ضربه‌ی دستمال یزدی،','وسوسه‌ی سیگار رو برای همیشه شکست داد.']],['راوی',['حشمت سیگار رو برای همیشه ترک کرد','و با دلی سبک پیش خانواده‌ش برگشت.']],['راوی',['از اون روز حشمت کنار خانواده‌ش','خوب و سالم زندگی کرد. 🎉']]];
+const cheats={god:false,fly:false};window.setCheat=function(k,v){cheats[k]=v};
+const h={x:95,y:ground-54,w:42,h:54,vy:0,onGround:true};
+window.startStage=function(n){stage=n;target=(stage===16?999999:stage<=10?((n-1)%5+1)*500:(n===15?3000:(n-10)*500));const gv=document.getElementById('gameview');gv.classList.toggle('yellow-stage',stage>=6&&stage<=10);gv.classList.toggle('red-stage',stage>=11&&stage<16);gv.classList.toggle('black-stage',stage===16);document.getElementById('lobby').style.display='none';gv.style.display='block';document.getElementById('gameTitle').textContent='🏃‍♂️ حشمت ران — مرحله '+stage;document.getElementById('stageGoal').textContent=stage===16?'وقتی غریبه سیگار نمی‌ندازه با دستمال یزدی بزنش — ۳ ضربه لازمه!':'به امتیاز '+target+' برس تا حشمت بره کمپ!';document.getElementById('smash').style.display=stage>=11?'inline-block':'none';introDone=false;reset()};
+window.showLobby=function(){state='lobby';document.getElementById('gameview').style.display='none';document.getElementById('lobby').style.display='block'};
+function reset(){state=(stage===16&&!introDone)?'story':'ready';boss={x:740,hp:3,phase:'throw',t:0,hurt:0,arm:0};scarfs=[];si=0;ei=0;score=0;frame=0;speed=3.8;obstacles=[];opiums=[];hookahs=[];smashAnim=0;message='';cigCount=0;cigsSinceOpium=0;nextOpiumAfter=2;opiumSpawnAt=-1;h.x=95;h.y=ground-h.h;h.vy=0;h.onGround=true;clouds=[{x:120,y:48},{x:450,y:70},{x:740,y:40}];draw()}
+function nearHookah(f){if(stage<11)return false;const k=Math.round(f/330);return k>=1&&Math.abs(f-k*330)<80}
+function advance(){if(state==='story'){si++;if(si>=S.length){state='playing';introDone=true}}else if(state==='ending'){ei++;if(ei>=E.length)state='finished'}draw()}
+function bossTick(){const b=boss;b.t++;if(b.hurt>0)b.hurt--;if(b.arm>0)b.arm--;
+ if(b.phase==='throw'){if(b.t===30||b.t===100||b.t===170){obstacles.push({x:b.x-10});b.arm=12}if(b.t>=190){b.phase='open';b.t=0}}
+ else if(b.phase==='open'&&b.t>=200){b.phase='throw';b.t=0}
+ scarfs.forEach(q=>{q.x+=14;q.r+=0.5;if(q.x>=b.x){q.dead=true;if(b.phase==='open'){b.hp--;b.hurt=24;b.phase='throw';b.t=-40}}});
+ scarfs=scarfs.filter(q=>!q.dead);
+ if(b.hp<=0){state='ending';ei=0;obstacles=[];scarfs=[]}}
+function jump(){if(state==='story'||state==='ending'){advance();return}if(state==='ready')state='playing';if(state==='playing'&&h.onGround){h.vy=-12.8;h.onGround=false}else if(state==='playing'&&cheats.fly){h.vy=-9}}
+function rect(x,y,w,hh,col){ctx.fillStyle=col;ctx.fillRect(Math.round(x),Math.round(y),w,hh)}
+function text(t,x,y,size=18,col='#222',align='center'){ctx.fillStyle=col;ctx.font=`bold ${size}px Tahoma, sans-serif`;ctx.textAlign=align;ctx.fillText(t,x,y)}
+function drawHeshmat(){if(stage===16)ctx.filter='brightness(2.6)';heshmatBody();ctx.filter='none'}
+function heshmatBody(){const x=h.x,y=h.y;
+rect(x+5,y+44,13,8,'#252525');rect(x+25,y+44,13,8,'#252525');rect(x+7,y+31,12,15,'#343434');rect(x+25,y+31,12,15,'#343434');
+rect(x+6,y+18,31,18,'#563a2a');rect(x+2,y+22,7,15,'#765037');rect(x+34,y+22,7,14,'#765037');
+rect(x+14,y+7,17,17,'#d9a06f');rect(x+17,y+4,13,6,'#29201c');
+rect(x+9,y+1,27,6,'#29201c');rect(x+13,y-5,19,8,'#29201c');rect(x+10,y+6,29,3,'#8b1e1e');
+rect(x+27,y+10,3,3,'#211a17');rect(x+15,y+14,18,5,'#211a17');rect(x+11,y+15,8,4,'#211a17');
+rect(x+39,y+25,8,7,'#b52b2b');rect(x+42,y+28,6,5,'#e8c76a');rect(x+40,y+32,8,4,'#b52b2b');rect(x+22,y+23,3,3,'#e8c76a');rect(x+22,y+30,3,3,'#e8c76a')}
+function drawCig(o){let x=o.x,y=ground-27;rect(x,y+8,34,8,'#eee7d9');rect(x+28,y+8,6,8,'#d64b35');rect(x+3,y+8,2,8,'#999');ctx.strokeStyle='#aaa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+11,y+6);ctx.quadraticCurveTo(x+4,y-2,x+13,y-8);ctx.stroke();ctx.beginPath();ctx.moveTo(x+21,y+6);ctx.quadraticCurveTo(x+29,y-1,x+22,y-6);ctx.stroke()}
+function drawOpium(o){
+ const bob=Math.sin((frame+o.phase)*0.08)*3, x=o.x, y=o.y+bob;
+ ctx.strokeStyle='#8a8a8a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+13,y-12);ctx.lineTo(x+13,y-4);ctx.stroke();
+ rect(x+7,y-3,13,5,'#477448');rect(x+4,y+1,19,15,'#668b45');rect(x+7,y+15,13,4,'#477448');
+ rect(x+10,y+4,3,7,'#91ad61');rect(x+15,y+5,3,6,'#91ad61');
+}
+function drawHookah(o){
+ const x=o.x,y=ground-88;
+ if(o.broken){rect(x+3,ground-12,20,5,'#777');rect(x+24,ground-8,13,4,'#555');rect(x+12,ground-18,5,6,'#b52b2b');return}
+ // Tall pixel-art hookah: base, stem, bowl and hose.
+ rect(x+8,y+64,34,13,'#a6a6a6');rect(x+4,y+70,42,7,'#6d6d6d');
+ rect(x+19,y+29,10,37,'#b52b2b');rect(x+16,y+24,16,7,'#d6b15c');
+ rect(x+12,y+15,24,11,'#d64b35');rect(x+15,y+9,18,7,'#444');
+ rect(x+31,y+20,4,20,'#222');rect(x+35,y+36,8,4,'#222');rect(x+39,y+39,4,15,'#222');
+ rect(x+17,y+33,3,27,'#e8c76a');rect(x+27,y+33,3,27,'#e8c76a');
+}
+function drawBoss(){const b=boss,x=b.x,y=ground-72,f=b.hurt>0&&b.hurt%6<3,body=f?'#fff':'#444',hood=f?'#fff':'#2a2a2a';
+ rect(x+6,y+60,14,12,hood);rect(x+26,y+60,14,12,hood);rect(x+4,y+24,38,40,body);rect(x+8,y+4,30,26,hood);rect(x+4,y+10,38,6,'#777');rect(x+12,y+16,6,6,'#ff3030');rect(x+26,y+16,6,6,'#ff3030');
+ if(b.arm>0){rect(x-14,y+22,20,6,body);rect(x-22,y+22,8,6,'#eee7d9')}else rect(x-2,y+34,8,18,body)}
+function dlg(n,l,col){rect(120,52,660,108,'#fff');ctx.strokeStyle='#000';ctx.lineWidth=2;ctx.strokeRect(120,52,660,108);text(n,770,76,15,col,'right');l.forEach((t,i)=>text(t,450,104+i*26,19,'#111'));text('Space / ↑ یا کلیک برای ادامه',450,152,12,'#777')}
+function drawBossScene(){if(boss.x<W+60)drawBoss();
+ scarfs.forEach(q=>{for(let i=1;i<=4;i++){ctx.fillStyle='rgba(232,199,106,'+(0.5-i*0.1)+')';ctx.fillRect(q.x-i*10,q.y+1,6,3)}ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.r);ctx.fillStyle='#b52b2b';ctx.fillRect(-8,-5,16,10);ctx.fillStyle='#e8c76a';ctx.fillRect(-8,-1,16,3);ctx.restore()});
+ if(state==='playing'||state==='over'||state==='ready'){text('جون غریبه',25,28,15,'#eee','left');for(let i=0;i<3;i++){rect(25+i*52,36,46,12,i<boss.hp?'#e03030':'#555')}}
+ if(state==='playing'&&boss.phase==='open')text('حالا دستمال رو بنداز! 🧣',boss.x+22,ground-92,16,'#f4d35e');
+ if(state==='story')dlg(S[si][0],S[si][1],S[si][0]==='حشمت'?'#2f7d32':'#a32727');
+ if(state==='ending')dlg(E[ei][0],E[ei][1],'#555');
+ if(state==='finished'){text('پایان 🎉',450,100,38,'#f4d35e');text('ممنون که حشمت‌ران رو بازی کردی!',450,140,18,'#eee');text('ساخته شده توسط فری',450,170,14,'#aaa')}}
+function drawBuilding(){rect(670,95,160,151,'#c9b79b');rect(658,88,184,13,'#785b46');for(let r=0;r<3;r++)for(let col=0;col<4;col++){rect(683+col*36,111+r*31,20,17,'#8db6c8');rect(683+col*36,111+r*31,20,2,'#e7f1f3')}rect(730,196,36,50,'#684633');rect(747,218,4,4,'#e9c76b');text('کمپ ترک سیگار',750,78,17,'#333')}
+function draw(){const D=stage===16;document.getElementById('nextStage').style.display=(state==='won'&&stage<16)?'inline-block':'none';document.getElementById('nextStage').textContent='رفتن به مرحله '+(stage+1)+' ⟵';rect(0,0,W,H,D?'#1b1b1b':'#f7f7f7');rect(790,25,25,25,'#f4d35e');clouds.forEach(a=>{rect(a.x,a.y,36,8,(D?'#333':'#ddd'));rect(a.x+8,a.y-7,22,8,(D?'#333':'#ddd'));rect(a.x+22,a.y+5,20,6,(D?'#333':'#ddd'))});rect(0,ground,W,3,D?'#ddd':'#333');for(let i=0;i<30;i++){let xx=((i*41-frame*speed)%W+W)%W;rect(xx,ground+13,18,2,'#bbb')}
+if(state==='won'){drawBuilding();drawHeshmat();text('حشمت سیگار رو ترک کرد! 🎉',450,43,27,'#2f7d32');text('مرحله '+stage+' رو بردی — امتیاز '+target,450,70,16);if(stage===10)text('پایان مرحله '+stage+' — ادامه‌ی ماجرا بعداً!',450,98,17,'#2f7d32');return}
+obstacles.forEach(drawCig);opiums.forEach(drawOpium);hookahs.forEach(drawHookah);drawHeshmat();if(D)drawBossScene();
+if(smashAnim>0){const near=hookahs.find(o=>!o.broken);if(near){rect(h.x+36,h.y+24,18,-3,'#b52b2b');rect(h.x+45,h.y+18,Math.max(5,near.x-(h.x+48)),4,'#b52b2b');rect(h.x+48,h.y+22,Math.max(5,near.x-(h.x+48)),3,'#e8c76a')}smashAnim--}
+if(!D)text('مرحله '+stage+' | امتیاز: '+Math.floor(score)+' / '+target,W-25,30,17,'#333','right');
+if(state==='ready'){rect(125,60,650,100,'#fff');ctx.strokeStyle='#333';ctx.strokeRect(125,60,650,100);text('«من می‌خوام سیگار رو ترک کنم… بهتره برم کمپ!»',450,96,20);text('برای شروع Space / ↑ یا دکمه‌ی پرش رو بزن',450,130,16,'#555')}
+if(state==='over'){rect(170,67,560,106,'#fff');ctx.strokeStyle='#333';ctx.strokeRect(170,67,560,106);text(message||'حشمت سیگاری شد! 🚬',450,105,25,'#a32727');text('برای تلاش دوباره، «شروع دوباره» رو بزن',450,140,16,'#555')}}
+function loop(){if(state==='ending'&&boss.x<W+80)boss.x+=4;if(state==='playing'){frame++;score+=0.5;speed=3.8;if(stage<16&&frame%(stage>=11?120:96)===0&&!nearHookah(frame)){
+  obstacles.push({x:W+10});
+  cigCount++; cigsSinceOpium++;
+  if(stage>=6 && cigsSinceOpium>=nextOpiumAfter){
+    opiumSpawnAt=frame+(stage>=11?60:65);
+    cigsSinceOpium=0;
+    nextOpiumAfter=(nextOpiumAfter===2?3:2);
+  }
+}
+if(stage>=6 && opiumSpawnAt===frame){
+  if(!nearHookah(frame))opiums.push({x:W+10,y:ground-88,phase:frame%40});
+  opiumSpawnAt=-1;
+}
+if(stage>=11 && stage<16 && frame>80 && frame%330===0)hookahs.push({x:W+20,broken:false});obstacles.forEach(o=>o.x-=speed);obstacles=obstacles.filter(o=>o.x>-45);opiums.forEach(o=>o.x-=speed);opiums=opiums.filter(o=>o.x>-40);hookahs.forEach(o=>o.x-=speed);hookahs=hookahs.filter(o=>o.x>-60||o.broken);h.vy+=0.50;h.y+=h.vy;if(h.y<0){h.y=0;h.vy=0}if(h.y>=ground-h.h){h.y=ground-h.h;h.vy=0;h.onGround=true}
+for(const o of obstacles){if(o.x<h.x+h.w-5&&o.x+34>h.x+5&&h.y+h.h>ground-27){state='over';message='حشمت سیگاری شد! 🚬'}}
+for(const o of hookahs){if(!o.broken && o.x<h.x+h.w+8 && o.x+50>h.x+4){state='over';message='حشمت قلیونی شد'}}
+for(const o of opiums){const oy=o.y+Math.sin((frame+o.phase)*0.08)*3;if(o.x<h.x+h.w-5&&o.x+27>h.x+5&&h.y<oy+19&&h.y+h.h>oy-3){state='over';message='اوه اوه حشمت تریاکی شد'}}
+if(cheats.god&&state==='over'){state='playing';message=''}if(stage===16)bossTick();if(score>=target){state='won';obstacles=[]}clouds.forEach(a=>{a.x-=0.35;if(a.x<-50)a.x=W+20})}draw();requestAnimationFrame(loop)}
+document.addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){if(document.getElementById('gameview').style.display!=='none'){e.preventDefault();jump()}}if(e.code==='KeyE'&&document.getElementById('gameview').style.display!=='none')smashHookah();if(e.code==='Enter'&&state==='over')reset()});
+c.addEventListener('pointerdown',jump);document.getElementById('jump').addEventListener('click',jump);document.getElementById('restart').addEventListener('click',reset);
+function smashHookah(){if(state==='story'||state==='ending'){advance();return}
+ if(state==='ready')state='playing';
+ if(stage===16){if(state==='playing'&&!scarfs.length)scarfs.push({x:h.x+45,y:h.y+20,r:0});return}
+ if(state!=='playing'||stage<11)return;
+ const o=hookahs.find(a=>!a.broken&&a.x>=h.x+25&&a.x<=h.x+145);
+ if(o){o.broken=true;smashAnim=12;score+=25}
+}
+document.getElementById('smash').addEventListener('click',smashHookah);
+document.getElementById('nextStage').addEventListener('click',()=>{if(state==='won'&&stage<16)window.startStage(stage+1)});
+draw();loop();
+})();
+</script></body></html>
